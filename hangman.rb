@@ -1,7 +1,8 @@
 class Hangman
   attr_reader :current_progress
 
-  def initialize
+  def initialize(dictionary_file)
+    @dictionary = load_dictionary(dictionary_file)
     @secret_word = random_word.split("")
     @guesses_remaining = 6
     @current_progress = ["*"]*@secret_word.length
@@ -16,17 +17,20 @@ class Hangman
     @current_progress.join(" ")
   end
 
-  def random_word
-    file_name = "5desk.txt"
-    dict_file = open(file_name, "r")
+  def load_dictionary(dictionary_file)
+    dict_file_obj = open(dictionary_file, "r")
     dictionary = []
-    until dict_file.eof?
-      word = dict_file.readline.chomp
+    until dict_file_obj.eof?
+      word = dict_file_obj.readline.chomp
       if word.length >=5 and word.length <=12 and word == word.downcase
         dictionary << word
       end
     end
-    secret_word = dictionary.sample
+    dictionary
+  end
+
+  def random_word
+    @dictionary.sample
   end
 
   def make_guess
@@ -89,5 +93,5 @@ class Hangman
 
 end
 
-game = Hangman.new
+game = Hangman.new("5desk.txt")
 game.game_loop
